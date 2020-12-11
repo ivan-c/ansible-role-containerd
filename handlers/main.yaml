@@ -1,0 +1,5 @@
+---
+- name: restart containerd
+  service:
+    name: containerd
+    state: "{{ containerd_restart_handler_state }}"

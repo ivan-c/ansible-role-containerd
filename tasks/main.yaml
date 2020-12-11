@@ -1,0 +1,40 @@
+---
+
+- include_tasks: setup-Debian.yaml
+  when: ansible_os_family == 'Debian'
+
+- name: Install containerd
+  package:
+    name: "{{ containerd_package }}"
+    state: "{{ containerd_package_state }}"
+
+- name: Create containerd config directory
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Get default containerd configuration
+  command: containerd config default
+  register: containerd_default_config
+  changed_when: false
+
+- name: Create containerd config file
+  copy:
+    content: "{{ containerd_default_config.stdout }}\n"
+    dest: /etc/containerd/config.toml
+    mode: '0644'
+    owner: root
+    group: root
+  notify: restart containerd
+
+# TODO change cgroup driver to systemd
+
+
+- name: Ensure containerd is started and enabled at boot
+  service:
+    name: containerd
+    state: "{{ containerd_service_state }}"
+    enabled: "{{ containerd_service_enabled }}"
