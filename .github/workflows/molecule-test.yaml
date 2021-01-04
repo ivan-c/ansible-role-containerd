@@ -43,8 +43,8 @@ jobs:
         run: sudo tox --notest
 
       - name: Run molecule tests
-        run: sudo --preserve-env=VAGRANT_KEY timeout 1h tox
+        run: sudo --preserve-env=VAGRANT_PRIVATE_KEY timeout 1h tox
         env:
           # use default ssh key
           # `vagrant up` unable to install secure key
-          VAGRANT_KEY: ~/.vagrant.d/insecure_private_key
+          VAGRANT_PRIVATE_KEY: ~/.vagrant.d/insecure_private_key
