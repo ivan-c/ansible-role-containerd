@@ -26,7 +26,8 @@ provisioner:
   connection_options:
     ansible_ssh_user: vagrant
     # allow override of default ssh key
-    ansible_ssh_private_key_file: ${VAGRANT_KEY:-~/.cache/molecule/ansible-role-ansible-pull/default/.vagrant/machines/buster/libvirt/private_key}
+    # TODO remove hardcoded reference to checkout path
+    ansible_ssh_private_key_file: ${VAGRANT_KEY:-~/.cache/molecule/ansible-role-containerd/default/.vagrant/machines/buster/libvirt/private_key}
   playbooks:
     converge: playbook.yml
     create: create.yml
