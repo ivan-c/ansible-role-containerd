@@ -15,8 +15,8 @@ jobs:
 
       - name: Install vagrant and libvirt packages
         run: '
-          sudo apt-get update &&
-          sudo apt-get install --no-install-recommends
+          sudo --preserve-env=DEBIAN_FRONTEND apt-get update &&
+          sudo --preserve-env=DEBIAN_FRONTEND apt-get install --no-install-recommends
             python3-setuptools
             libvirt-daemon-system
             vagrant
@@ -43,7 +43,7 @@ jobs:
         run: sudo tox --notest
 
       - name: Run molecule tests
-        run: sudo VAGRANT_KEY="$VAGRANT_KEY" timeout 1h tox
+        run: sudo --preserve-env=VAGRANT_KEY timeout 1h tox
         env:
           # use default ssh key
           # `vagrant up` unable to install secure key
