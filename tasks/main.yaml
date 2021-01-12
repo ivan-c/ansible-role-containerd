@@ -21,6 +21,7 @@
   register: containerd_default_config
   changed_when: false
 
+# TODO change cgroup driver to systemd
 - name: Create containerd config file
   copy:
     content: "{{ containerd_default_config.stdout }}\n"
@@ -29,9 +30,6 @@
     owner: root
     group: root
   notify: restart containerd
-
-# TODO change cgroup driver to systemd
-
 
 - name: Ensure containerd is started and enabled at boot
   service:
