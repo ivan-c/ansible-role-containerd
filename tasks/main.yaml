@@ -8,6 +8,10 @@
     name: "{{ containerd_package }}"
     state: "{{ containerd_package_state }}"
 
+- name: Setup devicemapper devices
+  include_tasks: devicemapper.yaml
+  when: containerd_snapshotter == 'devmapper'
+
 - name: Create containerd config directory
   file:
     path: /etc/containerd
@@ -21,10 +25,28 @@
   register: containerd_default_config
   changed_when: false
 
+- name: Create devmapper config snippet
+  set_fact:
+    # preserve indentation after 2 spaces
+    devmapper_config: |2
+        [plugins."io.containerd.snapshotter.v1.devmapper"]
+          pool_name = "{{ containerd_devmapper_pool_name }}"
+          root_path = "{{ containerd_devmapper_image_dir }}"
+          base_image_size = "10GB"
+  when: containerd_snapshotter == "devmapper"
+
+# TODO use TOML-specific tooling
+- name: Modify containerd default config
+  set_fact:
+    # TODO use multiline=True with ansible >= 2.10
+    # remove default devmapper snapshotter config
+    containerd_config: |
+      {{ containerd_default_config.stdout | regex_replace('(?m)[^\n]+\[plugins\S*devmapper\S*\][\S\s]+', devmapper_config | default('')) }}
+
 # TODO change cgroup driver to systemd
 - name: Create containerd config file
   copy:
-    content: "{{ containerd_default_config.stdout }}\n"
+    content: "{{ containerd_config }}\n"
     dest: /etc/containerd/config.toml
     mode: 0644
     owner: root
