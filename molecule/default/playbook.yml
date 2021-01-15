@@ -1,6 +1,9 @@
 ---
 - name: Converge
   hosts: all
+  # TODO move to new platform in molecule.yml
+  vars:
+    containerd_snapshotter: devmapper
   roles:
     # Use git repo dir name instead of role name
     - role: ansible-role-containerd
