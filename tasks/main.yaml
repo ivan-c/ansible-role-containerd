@@ -12,7 +12,7 @@
   file:
     path: /etc/containerd
     state: directory
-    mode: '0755'
+    mode: 0755
     owner: root
     group: root
 
@@ -26,7 +26,7 @@
   copy:
     content: "{{ containerd_default_config.stdout }}\n"
     dest: /etc/containerd/config.toml
-    mode: '0644'
+    mode: 0644
     owner: root
     group: root
   notify: restart containerd
