@@ -12,46 +12,25 @@
     cmd: "truncate --size {{ item.size }} {{ containerd_devmapper_image_dir }}/{{ item.filename }}"
     creates: "{{ containerd_devmapper_image_dir }}/{{ item.filename }}"
   loop:
+    # TODO move filenames to default variables
     - filename: data.img
       size: 100GiB
     - filename: metadata.img
       size: 10GiB
 
-- name: Check loopback device status
-  command:
-    cmd: "losetup --associated {{ containerd_devmapper_image_dir }}/{{ item }}  --output NAME --noheadings"
-  loop:
-    - data.img
-    - metadata.img
-  register: existing_loopback_devices
-  changed_when: false
-
 - name: Create loopback devices
   command:
-    cmd: "losetup --show --find {{ containerd_devmapper_image_dir }}/{{ item.item }}"
-  when: item.stdout | length == 0
-  loop: "{{ existing_loopback_devices.results }}"
-  register: new_loopback_devices
-
-# TODO use more idiomatic approach
-- name: Register loopback device names
-  set_fact:
-    data_device: '
-      {{
-        new_loopback_devices.results[0]["stdout"] if "stdout" in new_loopback_devices.results[0] else
-        new_loopback_devices.results[0]["item"]["stdout"]
-      }}
-    '
-    metadata_device: '
-      {{
-        new_loopback_devices.results[1]["stdout"] if "stdout" in new_loopback_devices.results[1] else
-        new_loopback_devices.results[1]["item"]["stdout"]
-      }}
-    '
+    cmd: "losetup {{ item.device }} {{ containerd_devmapper_image_dir }}/{{ item.filename }}"
+    creates: "{{ item.device }}"
+  loop:
+    - filename: data.img
+      device: "{{ containerd_devmapper_data_device }}"
+    - filename: metadata.img
+      device: "{{ containerd_devmapper_metadata_device }}"
 
 - name: Get data device size
   command:
-    cmd: "blockdev --getsize64 -q {{ data_device }}"
+    cmd: "blockdev --getsize64 -q {{ containerd_devmapper_data_device }}"
   changed_when: false
   register: data_device_size
 
@@ -63,8 +42,8 @@
         0
         {{ (data_device_size.stdout|int / containerd_devmapper_sector_size)|int }}
         thin-pool
-        {{ metadata_device }}
-        {{ data_device }}
+        {{ containerd_devmapper_metadata_device }}
+        {{ containerd_devmapper_data_device }}
         {{ containerd_devmapper_data_block_size }}
         {{ containerd_devmapper_low_water_mark }}
       "

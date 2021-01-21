@@ -16,6 +16,9 @@ docker_apt_gpg_key: https://download.docker.com/linux/{{ ansible_distribution | 
 
 containerd_snapshotter: native
 
+# TODO use named devices
+containerd_devmapper_data_device: /dev/loop10
+containerd_devmapper_metadata_device: /dev/loop11
 containerd_devmapper_pool_name: containerd_dev_pool
 containerd_devmapper_image_dir: /var/lib/containerd/devmapper
 containerd_devmapper_sector_size: 512
