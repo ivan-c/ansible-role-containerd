@@ -12,8 +12,10 @@
     cmd: "truncate --size {{ item.size }} {{ containerd_devmapper_image_dir }}/{{ item.filename }}"
     creates: "{{ containerd_devmapper_image_dir }}/{{ item.filename }}"
   loop:
-    - {filename: 'data.img', size: '100GiB'}
-    - {filename: 'metadata.img', size: '10GiB'}
+    - filename: data.img
+      size: 100GiB
+    - filename: metadata.img
+      size: 10GiB
 
 - name: Check loopback device status
   command:
