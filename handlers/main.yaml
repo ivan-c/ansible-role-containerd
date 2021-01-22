@@ -3,3 +3,8 @@
   service:
     name: containerd
     state: "{{ containerd_restart_handler_state }}"
+
+- name: Enable setup-loopbacks service
+  systemd:
+    name: setup-loopbacks.service
+    enabled: yes

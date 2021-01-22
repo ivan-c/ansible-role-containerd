@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Setup loopback devices
+
+DefaultDependencies=no
+Conflicts=umount.target
+
+Before=local-fs.target
+After=systemd-udevd.service home.mount
+Required=systemd-udevd.service
+
+[Service]
+ExecStart=/sbin/losetup {{ containerd_devmapper_data_device }} {{ containerd_devmapper_image_dir }}/data.img
+ExecStart=/sbin/losetup {{ containerd_devmapper_metadata_device }} {{ containerd_devmapper_image_dir }}/metadata.img
+
+ExecStop=/sbin/losetup -d {{ containerd_devmapper_data_device }}
+ExecStop=/sbin/losetup -d {{ containerd_devmapper_metadata_device }}
+
+RemainAfterExit=yes
+Type=oneshot
+
+[Install]
+WantedBy=local-fs-pre.target
