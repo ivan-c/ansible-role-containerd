@@ -28,6 +28,12 @@
     - filename: metadata.img
       device: "{{ containerd_devmapper_metadata_device }}"
 
+- name: Get data device size
+  command:
+    cmd: "blockdev --getsize64 -q {{ containerd_devmapper_data_device }}"
+  changed_when: false
+  register: data_device_size
+
 - name: Install systemd service
   template:
     src: setup-loopbacks.service.j2
@@ -37,12 +43,6 @@
     group: root
   notify:
     - Enable setup-loopbacks service
-
-- name: Get data device size
-  command:
-    cmd: "blockdev --getsize64 -q {{ containerd_devmapper_data_device }}"
-  changed_when: false
-  register: data_device_size
 
 - name: Create thinpool
   command:
