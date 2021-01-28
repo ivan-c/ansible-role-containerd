@@ -41,7 +41,11 @@
     # TODO use multiline=True with ansible >= 2.10
     # remove default devmapper snapshotter config
     containerd_config: |
-      {{ containerd_default_config.stdout | regex_replace('(?m)[^\n]+\[plugins\S*devmapper\S*\][\S\s]+', devmapper_config | default('')) }}
+      {{
+      containerd_default_config.stdout |
+      regex_replace('(?m)[^\n]+\[plugins\S*devmapper\S*\][\S\s]+', devmapper_config | default('')) |
+      regex_replace('snapshotter = "overlayfs"', 'snapshotter = "devmapper"')
+      }}
 
 # TODO change cgroup driver to systemd
 - name: Create containerd config file
