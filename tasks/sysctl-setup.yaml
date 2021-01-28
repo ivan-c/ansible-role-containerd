@@ -1,5 +1,20 @@
+# Configure kernel modules for bridge traffic
+# https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
 ---
-# See: https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+- name: Configure required kernel modules
+  copy:
+    content: |
+      overlay
+      br_netfilter
+    dest: /etc/modules-load.d/containerd.conf
+    mode: 0755
+    owner: root
+    group: root
+  notify: Reload configured kernel modules
+
+- name: Force all notified handlers to run
+  meta: flush_handlers
+
 - name: Let iptables see bridged traffic
   sysctl:
     name: "{{ item }}"

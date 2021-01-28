@@ -8,3 +8,8 @@
   systemd:
     name: setup-loopbacks.service
     enabled: yes
+
+- name: Reload configured kernel modules
+  systemd:
+    name: systemd-modules-load.service
+    state: restarted
