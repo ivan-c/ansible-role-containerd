@@ -1,0 +1,11 @@
+---
+# See: https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd
+- name: Let iptables see bridged traffic
+  sysctl:
+    name: "{{ item }}"
+    value: '1'
+    state: present
+  loop:
+    - net.bridge.bridge-nf-call-iptables
+    - net.ipv4.ip_forward
+    - net.bridge.bridge-nf-call-ip6tables

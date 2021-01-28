@@ -8,6 +8,8 @@
     name: "{{ containerd_package }}"
     state: "{{ containerd_package_state }}"
 
+- include_tasks: sysctl-setup.yaml
+
 - name: Setup devicemapper devices
   include_tasks: devicemapper.yaml
   when: containerd_snapshotter == 'devmapper'
